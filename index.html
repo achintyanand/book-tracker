@@ -3,289 +3,330 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>2027 Reading Tracker</title>
+  <title>Books to Read (2027) — Reading Tracker</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Canvas Confetti CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <!-- Phosphor Icons CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#eef2ff',
+              400: '#818cf8',
+              500: '#6366f1',
+              600: '#4f46e5',
+            },
+            surface: {
+              bg: '#0b0f19',
+              card: '#111827',
+              inner: '#1a2234',
+              border: '#1f293d',
+              borderLight: '#2d3b55'
+            }
+          }
+        }
+      }
+    }
+  </script>
   <style>
-    :root {
-      --bg: #0f172a;
-      --card-bg: #1e293b;
-      --card-header: #334155;
-      --primary: #6366f1;
-      --primary-hover: #4f46e5;
-      --text-main: #f8fafc;
-      --text-muted: #94a3b8;
-      --border: #334155;
-      --input-bg: #0f172a;
-      --success: #10b981;
-      --success-bg: rgba(16, 185, 129, 0.12);
-      --success-border: rgba(16, 185, 129, 0.35);
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0b0f19;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #1f293d;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #2d3b55;
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    /* Completed state smooth styling */
+    .row-completed {
+      background: linear-gradient(90deg, rgba(16, 185, 129, 0.08) 0%, rgba(17, 24, 39, 0.95) 100%) !important;
+      border-color: rgba(16, 185, 129, 0.28) !important;
     }
 
-    body {
-      background-color: var(--bg);
-      color: var(--text-main);
-      padding: 2rem 1rem;
-      display: flex;
-      justify-content: center;
-      min-height: 100vh;
-    }
-
-    .container {
-      width: 100%;
-      max-width: 900px;
-      display: flex;
-      flex-direction: column;
-      gap: 1.5rem;
-    }
-
-    /* Header & Progress Card */
-    .card {
-      background: var(--card-bg);
-      border-radius: 12px;
-      padding: 1.5rem;
-      box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.4);
-      border: 1px solid var(--border);
-    }
-
-    .header-content {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 1rem;
-      margin-bottom: 1.25rem;
-    }
-
-    h1 {
-      font-size: 1.75rem;
-      font-weight: 700;
-      color: var(--text-main);
-      letter-spacing: -0.02em;
-    }
-
-    .goal-badge {
-      background: rgba(99, 102, 241, 0.2);
-      color: #a5b4fc;
-      border: 1px solid rgba(99, 102, 241, 0.4);
-      padding: 0.4rem 0.85rem;
-      border-radius: 9999px;
-      font-weight: 600;
-      font-size: 0.9rem;
-    }
-
-    .progress-bar-container {
-      background: #0f172a;
-      border-radius: 9999px;
-      height: 16px;
-      overflow: hidden;
-      border: 1px solid var(--border);
-    }
-
-    .progress-bar-fill {
-      background: linear-gradient(90deg, var(--primary), var(--success));
-      height: 100%;
-      width: 0%;
-      transition: width 0.4s ease;
-      border-radius: 9999px;
-    }
-
-    .status-text {
-      margin-top: 0.75rem;
-      font-size: 0.9rem;
-      color: var(--text-muted);
-      text-align: right;
-      font-weight: 500;
-    }
-
-    /* Table Styling */
-    .table-container {
-      overflow-x: auto;
-      padding: 0;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      text-align: left;
-    }
-
-    th {
-      background: var(--card-header);
-      padding: 0.9rem 1.25rem;
-      font-size: 0.8rem;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      color: var(--text-muted);
-      border-bottom: 1px solid var(--border);
-    }
-
-    td {
-      padding: 0.85rem 1.25rem;
-      border-bottom: 1px solid var(--border);
-      vertical-align: middle;
-      transition: background-color 0.2s;
-    }
-
-    tr:last-child td {
-      border-bottom: none;
-    }
-
-    .month-col {
-      font-weight: 600;
-      color: #cbd5e1;
-      width: 140px;
-    }
-
-    input[type="text"] {
-      width: 100%;
-      padding: 0.6rem 0.85rem;
-      background-color: var(--input-bg);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      font-size: 0.95rem;
-      color: var(--text-main);
-      outline: none;
-      transition: border-color 0.2s, box-shadow 0.2s;
-    }
-
-    input[type="text"]::placeholder {
-      color: #475569;
-    }
-
-    input[type="text"]:focus {
-      border-color: var(--primary);
-      box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.25);
-    }
-
-    .checkbox-col {
-      text-align: center;
-      width: 90px;
-    }
-
-    input[type="checkbox"] {
-      width: 20px;
-      height: 20px;
-      cursor: pointer;
-      accent-color: var(--success);
-    }
-
-    /* Completed row effect */
-    tr.completed {
-      background-color: var(--success-bg);
-    }
-
-    tr.completed td {
-      border-bottom-color: var(--success-border);
-    }
-
-    tr.completed input[type="text"] {
+    .row-completed input.title-field {
       text-decoration: line-through;
-      color: var(--text-muted);
-      border-color: var(--success-border);
-      background-color: rgba(15, 23, 42, 0.6);
+      color: #94a3b8;
     }
 
-    tr.completed .month-col {
-      color: var(--success);
+    /* Custom Switch Toggle styling */
+    .toggle-checkbox:checked {
+      right: 0;
+      border-color: #10b981;
+      background-color: #10b981;
+    }
+    .toggle-checkbox:checked + .toggle-label {
+      background-color: #064e3b;
     }
 
-    /* Action Buttons */
-    .actions {
-      display: flex;
-      justify-content: flex-end;
-      gap: 0.75rem;
-    }
-
-    button {
-      padding: 0.55rem 1.1rem;
-      border-radius: 6px;
-      font-size: 0.875rem;
-      font-weight: 500;
-      cursor: pointer;
-      border: 1px solid var(--border);
-      background: var(--card-bg);
-      color: var(--text-main);
-      transition: all 0.2s;
-    }
-
-    button:hover {
-      background: #334155;
-      border-color: #475569;
+    /* Pulse Glow for 100% progress */
+    .glow-celebrate {
+      box-shadow: 0 0 25px rgba(16, 185, 129, 0.35);
     }
   </style>
 </head>
-<body>
+<body class="bg-surface-bg text-slate-100 min-h-screen flex flex-col font-sans antialiased selection:bg-brand-500 selection:text-white">
 
-  <div class="container">
-    <!-- Header & Progress Card -->
-    <div class="card">
-      <div class="header-content">
-        <div>
-          <h1>📚 Books to Read </h1>
-          <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 4px;">
-            Set your monthly reading goals and mark them off as you complete them.
-          </p>
+  <!-- Main Container -->
+  <main class="w-full max-w-5xl mx-auto px-4 sm:px-6 py-6 sm:py-10 flex-1 flex flex-col gap-6">
+
+    <!-- Top Navigation / Brand Bar -->
+    <header class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-2 border-b border-surface-border">
+      <div class="flex items-center gap-3">
+        <div class="w-12 h-12 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-400 flex items-center justify-center shadow-lg shadow-brand-500/20 text-white text-xl">
+          <i class="fa-solid fa-book-bookmark"></i>
         </div>
-        <div class="goal-badge" id="goalStatus">0 / 12 Completed</div>
+        <div>
+          <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-white flex items-center gap-2">
+            Books to Read <span class="text-brand-400 bg-brand-500/10 px-2.5 py-0.5 rounded-lg border border-brand-500/30 text-lg sm:text-xl font-bold">2027</span>
+          </h1>
+          <p class="text-xs sm:text-sm text-slate-400">Annual monthly reading tracker & goal dashboard</p>
+        </div>
+      </div>
+      <!-- Quick Action Buttons -->
+      <div class="flex items-center gap-2 self-stretch sm:self-auto">
+        <button id="exportCsvBtn" onclick="exportCSV()" class="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-lg bg-surface-inner border border-surface-border hover:border-slate-500 hover:bg-slate-800 text-xs sm:text-sm font-medium transition text-slate-200">
+          <i class="fa-solid fa-file-excel text-emerald-400"></i>
+          <span>CSV</span>
+        </button>
+        <button id="exportJsonBtn" onclick="exportJSON()" class="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-lg bg-surface-inner border border-surface-border hover:border-slate-500 hover:bg-slate-800 text-xs sm:text-sm font-medium transition text-slate-200">
+          <i class="fa-solid fa-code text-brand-400"></i>
+          <span>JSON</span>
+        </button>
+        <button id="openResetModalBtn" onclick="openResetModal()" class="inline-flex items-center justify-center p-2.5 rounded-lg bg-surface-inner border border-surface-border hover:border-rose-500/50 hover:bg-rose-500/10 text-slate-400 hover:text-rose-400 transition" title="Reset All Progress">
+          <i class="fa-solid fa-arrow-rotate-left text-sm"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- Progress Dashboard Card -->
+    <section id="dashboardCard" class="bg-surface-card border border-surface-border rounded-2xl p-5 sm:p-6 shadow-xl transition-all duration-300">
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-5">
+        <!-- Stat: Completed -->
+        <div class="bg-surface-inner/80 rounded-xl p-3.5 sm:p-4 border border-surface-border flex items-center gap-3">
+          <div class="w-10 h-10 rounded-lg bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 flex items-center justify-center text-lg">
+            <i class="fa-solid fa-circle-check"></i>
+          </div>
+          <div>
+            <div class="text-xs text-slate-400 font-medium uppercase tracking-wider">Completed</div>
+            <div id="statCompleted" class="text-xl sm:text-2xl font-bold text-white">0</div>
+          </div>
+        </div>
+
+        <!-- Stat: Remaining -->
+        <div class="bg-surface-inner/80 rounded-xl p-3.5 sm:p-4 border border-surface-border flex items-center gap-3">
+          <div class="w-10 h-10 rounded-lg bg-amber-500/15 border border-amber-500/30 text-amber-400 flex items-center justify-center text-lg">
+            <i class="fa-solid fa-hourglass-half"></i>
+          </div>
+          <div>
+            <div class="text-xs text-slate-400 font-medium uppercase tracking-wider">Remaining</div>
+            <div id="statRemaining" class="text-xl sm:text-2xl font-bold text-white">12</div>
+          </div>
+        </div>
+
+        <!-- Stat: Goal Progress -->
+        <div class="bg-surface-inner/80 rounded-xl p-3.5 sm:p-4 border border-surface-border flex items-center gap-3">
+          <div class="w-10 h-10 rounded-lg bg-brand-500/15 border border-brand-500/30 text-brand-400 flex items-center justify-center text-lg">
+            <i class="fa-solid fa-bullseye"></i>
+          </div>
+          <div>
+            <div class="text-xs text-slate-400 font-medium uppercase tracking-wider">Target</div>
+            <div class="text-xl sm:text-2xl font-bold text-white">12 <span class="text-xs text-slate-400 font-normal">books</span></div>
+          </div>
+        </div>
+
+        <!-- Stat: Percentage -->
+        <div class="bg-surface-inner/80 rounded-xl p-3.5 sm:p-4 border border-surface-border flex items-center gap-3">
+          <div class="w-10 h-10 rounded-lg bg-cyan-500/15 border border-cyan-500/30 text-cyan-400 flex items-center justify-center text-lg">
+            <i class="fa-solid fa-chart-line"></i>
+          </div>
+          <div>
+            <div class="text-xs text-slate-400 font-medium uppercase tracking-wider">Progress</div>
+            <div id="statPercent" class="text-xl sm:text-2xl font-bold text-white">0%</div>
+          </div>
+        </div>
       </div>
 
-      <!-- Progress Bar -->
-      <div class="progress-bar-container">
-        <div class="progress-bar-fill" id="progressBar"></div>
+      <!-- Animated Progress Bar -->
+      <div class="w-full bg-surface-bg rounded-full h-4 p-0.5 overflow-hidden border border-surface-border">
+        <div id="mainProgressBar" class="h-full rounded-full bg-gradient-to-r from-brand-500 via-indigo-500 to-emerald-400 transition-all duration-500 ease-out shadow-sm" style="width: 0%"></div>
       </div>
-      <div class="status-text" id="statusMessage">
-        You have completed 0% for your goal
-      </div>
-    </div>
 
-    <!-- Book List Table -->
-    <div class="card table-container">
-      <table>
+      <!-- Status banner text matching spreadsheet equation -->
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-2 mt-3 pt-1">
+        <span id="formulaFormulaText" class="text-xs font-mono text-slate-500">Spreadsheet: =COUNTIF(D:D,"True")/12</span>
+        <div id="statusNotice" class="text-sm font-semibold text-brand-400 flex items-center gap-1.5">
+          <i class="fa-solid fa-sparkles"></i>
+          <span>You have completed 0% for your goal</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Filters, Search & View Controls -->
+    <section class="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
+      <!-- Search Bar -->
+      <div class="relative flex-1">
+        <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-slate-400">
+          <i class="fa-solid fa-magnifying-glass text-sm"></i>
+        </span>
+        <input 
+          type="text" 
+          id="searchInput" 
+          oninput="handleSearch(this.value)"
+          placeholder="Filter by title, author, or month..." 
+          class="w-full pl-10 pr-4 py-2.5 rounded-xl bg-surface-card border border-surface-border text-slate-100 placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition"
+        />
+        <button id="clearSearchBtn" onclick="clearSearch()" class="hidden absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-white">
+          <i class="fa-solid fa-xmark text-sm"></i>
+        </button>
+      </div>
+
+      <!-- Filter Tabs -->
+      <div class="inline-flex rounded-xl bg-surface-card border border-surface-border p-1 gap-1 text-xs sm:text-sm font-medium self-start md:self-auto">
+        <button onclick="setFilter('all')" id="filterBtnAll" class="px-3.5 py-2 rounded-lg transition text-white bg-brand-600 font-semibold shadow-sm">
+          All (12)
+        </button>
+        <button onclick="setFilter('completed')" id="filterBtnCompleted" class="px-3.5 py-2 rounded-lg transition text-slate-400 hover:text-white">
+          Completed (<span id="filterCountCompleted">0</span>)
+        </button>
+        <button onclick="setFilter('todo')" id="filterBtnTodo" class="px-3.5 py-2 rounded-lg transition text-slate-400 hover:text-white">
+          To Read (<span id="filterCountTodo">12</span>)
+        </button>
+      </div>
+    </section>
+
+    <!-- Reading List Container -->
+    <!-- Desktop Table View (Hidden on mobile < md) -->
+    <div class="hidden md:block bg-surface-card border border-surface-border rounded-2xl overflow-hidden shadow-xl">
+      <table class="w-full text-left border-collapse">
         <thead>
-          <tr>
-            <th>Month</th>
-            <th>Title</th>
-            <th>Author</th>
-            <th style="text-align: center;">Is done?</th>
+          <tr class="bg-surface-inner/90 border-b border-surface-border text-slate-400 uppercase text-xs font-semibold tracking-wider">
+            <th class="py-4 px-6 w-44">Month</th>
+            <th class="py-4 px-6">Book Title</th>
+            <th class="py-4 px-6 w-72">Author</th>
+            <th class="py-4 px-6 text-center w-32">Is done?</th>
           </tr>
         </thead>
-        <tbody id="bookTableBody">
+        <tbody id="desktopTableBody" class="divide-y divide-surface-border/60 text-sm">
           <!-- Populated by JavaScript -->
         </tbody>
       </table>
     </div>
 
-    <!-- Actions -->
-    <div class="actions">
-      <button onclick="resetData()">Reset Tracker</button>
-      <button onclick="exportData()">Export Data (JSON)</button>
+    <!-- Mobile Card View (Visible on mobile < md) -->
+    <div id="mobileCardsContainer" class="md:hidden flex flex-col gap-3.5">
+      <!-- Populated by JavaScript -->
+    </div>
+
+    <!-- Empty State -->
+    <div id="emptyState" class="hidden py-16 text-center bg-surface-card border border-surface-border rounded-2xl p-6">
+      <div class="w-14 h-14 mx-auto mb-3 rounded-full bg-surface-inner flex items-center justify-center text-slate-400 text-xl">
+        <i class="fa-solid fa-book-open"></i>
+      </div>
+      <h3 class="text-base font-semibold text-white">No books match your filter</h3>
+      <p class="text-xs text-slate-400 mt-1 max-w-sm mx-auto">Try clearing your search query or switching filters to view your monthly list.</p>
+      <button onclick="resetFiltersAndSearch()" class="mt-4 px-4 py-2 bg-brand-600 hover:bg-brand-500 text-white rounded-lg text-xs font-medium transition">
+        Reset filters
+      </button>
+    </div>
+
+  </main>
+
+  <!-- Sticky Mobile Progress Footer Bar (Mobile Only) -->
+  <aside class="md:hidden sticky bottom-0 left-0 right-0 bg-surface-card/95 backdrop-blur-md border-t border-surface-border px-4 py-3 z-30 flex items-center justify-between gap-3 shadow-2xl">
+    <div class="flex items-center gap-2">
+      <div class="w-8 h-8 rounded-lg bg-brand-500/20 text-brand-400 flex items-center justify-center text-xs font-bold" id="mobileStickyBadge">
+        0/12
+      </div>
+      <div class="flex flex-col">
+        <span class="text-xs font-semibold text-white" id="mobileStickyPercent">0% Done</span>
+        <span class="text-[10px] text-slate-400">2027 Challenge</span>
+      </div>
+    </div>
+    <div class="flex-1 max-w-[140px] bg-surface-bg rounded-full h-2.5 overflow-hidden border border-surface-border">
+      <div id="mobileStickyBar" class="h-full bg-emerald-400 transition-all duration-300" style="width: 0%"></div>
+    </div>
+    <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="p-2 text-slate-400 hover:text-white rounded-lg bg-surface-inner text-xs">
+      <i class="fa-solid fa-arrow-up"></i>
+    </button>
+  </aside>
+
+  <!-- Confirmation Modal (Safe Alternative to confirm()) -->
+  <div id="resetModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-200">
+    <div class="bg-surface-card border border-surface-border rounded-2xl max-w-md w-full p-6 shadow-2xl transform scale-95 transition-transform duration-200" id="resetModalCard">
+      <div class="w-12 h-12 rounded-xl bg-rose-500/15 border border-rose-500/30 text-rose-400 flex items-center justify-center text-xl mb-4">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+      </div>
+      <h3 class="text-lg font-bold text-white mb-2">Reset All Reading Data?</h3>
+      <p class="text-sm text-slate-400 mb-6 leading-relaxed">
+        This will clear all 12 book titles, authors, and completed marks back to an empty slate. This cannot be undone unless you have exported a backup.
+      </p>
+      <div class="flex items-center justify-end gap-3">
+        <button onclick="closeResetModal()" class="px-4 py-2.5 rounded-xl border border-surface-border hover:bg-slate-800 text-slate-300 text-sm font-medium transition">
+          Cancel
+        </button>
+        <button onclick="confirmReset()" class="px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-sm font-medium shadow-lg shadow-rose-600/30 transition">
+          Yes, Reset All
+        </button>
+      </div>
     </div>
   </div>
 
+  <!-- Notification Toast -->
+  <div id="toast" class="fixed bottom-16 md:bottom-6 right-6 z-50 transform translate-y-12 opacity-0 pointer-events-none transition-all duration-300 bg-surface-inner border border-surface-borderLight text-slate-100 text-xs sm:text-sm px-4 py-3 rounded-xl shadow-2xl flex items-center gap-2.5">
+    <i id="toastIcon" class="fa-solid fa-check text-emerald-400"></i>
+    <span id="toastMessage">Changes saved</span>
+  </div>
+
   <script>
-    const months = [
+    // Constants & Spreadsheet Months
+    const MONTHS = [
       "January", "February", "March", "April", "May", "June",
       "July", "August", "September", "October", "November", "December"
     ];
+    const STORAGE_KEY = "reading_tracker_2027_v2";
 
-    const STORAGE_KEY = "reading_tracker_2027";
+    // Application State
+    let booksData = [];
+    let currentFilter = 'all'; // 'all' | 'completed' | 'todo'
+    let searchQuery = '';
+    let celebrationTriggered = false;
 
-    function loadData() {
+    // Initialize State from localStorage or default template
+    function init() {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
         try {
-          return JSON.parse(saved);
+          const parsed = JSON.parse(saved);
+          if (Array.isArray(parsed) && parsed.length === 12) {
+            booksData = parsed;
+          } else {
+            booksData = createInitialState();
+          }
         } catch (e) {
-          console.error("Failed to parse saved data", e);
+          booksData = createInitialState();
         }
+      } else {
+        booksData = createInitialState();
       }
-      return months.map(month => ({
+      render();
+    }
+
+    function createInitialState() {
+      return MONTHS.map(month => ({
         month: month,
         title: "",
         author: "",
@@ -293,88 +334,412 @@
       }));
     }
 
-    let booksData = loadData();
-
-    function saveData() {
+    function saveState() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(booksData));
-      updateProgress();
+      updateDashboard();
     }
 
-    function updateProgress() {
-      const completedCount = booksData.filter(b => b.isDone).length;
-      const totalCount = booksData.length;
-      const percentage = Math.round((completedCount / totalCount) * 100);
+    // Filter and Search logic
+    function getVisibleBooks() {
+      return booksData.map((book, originalIndex) => ({ ...book, originalIndex })).filter(book => {
+        // Filter condition
+        if (currentFilter === 'completed' && !book.isDone) return false;
+        if (currentFilter === 'todo' && book.isDone) return false;
 
-      document.getElementById("progressBar").style.width = percentage + "%";
-      document.getElementById("goalStatus").innerText = `${completedCount} / ${totalCount} Completed`;
-      document.getElementById("statusMessage").innerText = 
-        `You have completed ${percentage}% for your goal`;
+        // Search condition
+        if (searchQuery.trim() !== '') {
+          const q = searchQuery.toLowerCase();
+          const matchMonth = book.month.toLowerCase().includes(q);
+          const matchTitle = (book.title || '').toLowerCase().includes(q);
+          const matchAuthor = (book.author || '').toLowerCase().includes(q);
+          return matchMonth || matchTitle || matchAuthor;
+        }
+        return true;
+      });
     }
 
-    function renderTable() {
-      const tbody = document.getElementById("bookTableBody");
-      tbody.innerHTML = "";
+    // Render both Desktop Table and Mobile Cards
+    function render() {
+      const visible = getVisibleBooks();
+      const desktopTbody = document.getElementById('desktopTableBody');
+      const mobileContainer = document.getElementById('mobileCardsContainer');
+      const emptyState = document.getElementById('emptyState');
 
-      booksData.forEach((item, index) => {
-        const tr = document.createElement("tr");
-        if (item.isDone) tr.classList.add("completed");
+      desktopTbody.innerHTML = '';
+      mobileContainer.innerHTML = '';
 
+      if (visible.length === 0) {
+        emptyState.classList.remove('hidden');
+      } else {
+        emptyState.classList.add('hidden');
+      }
+
+      visible.forEach(book => {
+        const idx = book.originalIndex;
+
+        // 1. Desktop Row
+        const tr = document.createElement('tr');
+        tr.className = `transition-colors duration-150 hover:bg-slate-800/40 ${book.isDone ? 'row-completed' : ''}`;
         tr.innerHTML = `
-          <td class="month-col">${item.month}</td>
-          <td>
-            <input type="text" placeholder="Enter book title..." value="${escapeHtml(item.title)}" 
-              oninput="updateField(${index}, 'title', this.value)" />
+          <td class="py-4 px-6 font-semibold flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full ${book.isDone ? 'bg-emerald-400' : 'bg-slate-600'}"></span>
+            <span class="${book.isDone ? 'text-emerald-400' : 'text-slate-200'}">${book.month}</span>
           </td>
-          <td>
-            <input type="text" placeholder="Enter author name..." value="${escapeHtml(item.author)}" 
-              oninput="updateField(${index}, 'author', this.value)" />
+          <td class="py-4 px-6">
+            <input 
+              type="text" 
+              class="title-field w-full px-3.5 py-2 rounded-lg bg-surface-bg border border-surface-border text-slate-100 placeholder-slate-600 focus:outline-none focus:ring-1 focus:ring-brand-500 focus:border-brand-500 transition text-sm"
+              placeholder="Enter book title..."
+              value="${escapeHtml(book.title)}"
+              oninput="handleFieldChange(${idx}, 'title', this.value)"
+            />
           </td>
-          <td class="checkbox-col">
-            <input type="checkbox" ${item.isDone ? "checked" : ""} 
-              onchange="toggleDone(${index}, this.checked)" />
+          <td class="py-4 px-6">
+            <input 
+              type="text" 
+              class="w-full px-3.5 py-2 rounded-lg bg-surface-bg border border-surface-border text-slate-100 placeholder-slate-600 focus:outline-none focus:ring-1 focus:ring-brand-500 focus:border-brand-500 transition text-sm"
+              placeholder="Enter author..."
+              value="${escapeHtml(book.author)}"
+              oninput="handleFieldChange(${idx}, 'author', this.value)"
+            />
+          </td>
+          <td class="py-4 px-6 text-center">
+            <label class="relative inline-flex items-center cursor-pointer select-none">
+              <input 
+                type="checkbox" 
+                class="sr-only peer"
+                ${book.isDone ? 'checked' : ''} 
+                onchange="handleToggleDone(${idx}, this.checked)"
+              />
+              <div class="w-11 h-6 bg-surface-inner peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500 border border-surface-border"></div>
+            </label>
           </td>
         `;
+        desktopTbody.appendChild(tr);
 
-        tbody.appendChild(tr);
+        // 2. Mobile Touch-Friendly Card
+        const card = document.createElement('div');
+        card.className = `p-4 sm:p-5 rounded-2xl bg-surface-card border transition-all duration-200 flex flex-col gap-3 shadow-md ${
+          book.isDone ? 'row-completed border-emerald-500/40' : 'border-surface-border'
+        }`;
+        card.innerHTML = `
+          <!-- Card Header: Month + Completed Toggle -->
+          <div class="flex items-center justify-between pb-2 border-b border-surface-border/60">
+            <div class="flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full ${book.isDone ? 'bg-emerald-400' : 'bg-slate-600'}"></span>
+              <h4 class="font-bold text-base ${book.isDone ? 'text-emerald-400' : 'text-white'}">${book.month}</h4>
+            </div>
+            
+            <label class="flex items-center gap-2 cursor-pointer select-none py-1 px-2 rounded-lg bg-surface-inner border border-surface-border">
+              <span class="text-xs font-medium ${book.isDone ? 'text-emerald-400' : 'text-slate-400'}">
+                ${book.isDone ? 'Completed' : 'Mark Done'}
+              </span>
+              <input 
+                type="checkbox" 
+                class="w-5 h-5 rounded border-surface-border text-emerald-500 focus:ring-emerald-500 focus:ring-offset-surface-card accent-emerald-500 cursor-pointer"
+                ${book.isDone ? 'checked' : ''} 
+                onchange="handleToggleDone(${idx}, this.checked)"
+              />
+            </label>
+          </div>
+
+          <!-- Input: Title -->
+          <div class="flex flex-col gap-1">
+            <label class="text-[11px] font-semibold tracking-wider uppercase text-slate-400">Book Title</label>
+            <input 
+              type="text" 
+              class="title-field w-full px-3.5 py-2.5 rounded-xl bg-surface-bg border border-surface-border text-slate-100 placeholder-slate-600 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 transition"
+              placeholder="e.g. Project Hail Mary"
+              value="${escapeHtml(book.title)}"
+              oninput="handleFieldChange(${idx}, 'title', this.value)"
+            />
+          </div>
+
+          <!-- Input: Author -->
+          <div class="flex flex-col gap-1">
+            <label class="text-[11px] font-semibold tracking-wider uppercase text-slate-400">Author</label>
+            <input 
+              type="text" 
+              class="w-full px-3.5 py-2.5 rounded-xl bg-surface-bg border border-surface-border text-slate-100 placeholder-slate-600 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 transition"
+              placeholder="e.g. Andy Weir"
+              value="${escapeHtml(book.author)}"
+              oninput="handleFieldChange(${idx}, 'author', this.value)"
+            />
+          </div>
+        `;
+        mobileContainer.appendChild(card);
       });
 
-      updateProgress();
+      updateDashboard();
+      updateFilterButtons();
     }
 
-    function updateField(index, field, value) {
-      booksData[index][field] = value;
-      saveData();
-    }
+    // Dashboard Stats & Formula calculation
+    function updateDashboard() {
+      const completedCount = booksData.filter(b => b.isDone).length;
+      const totalCount = booksData.length; // 12
+      const percent = Math.round((completedCount / totalCount) * 100);
+      const remainingCount = totalCount - completedCount;
 
-    function toggleDone(index, isChecked) {
-      booksData[index].isDone = isChecked;
-      saveData();
-      renderTable();
-    }
+      // Stats Cards
+      document.getElementById('statCompleted').textContent = completedCount;
+      document.getElementById('statRemaining').textContent = remainingCount;
+      document.getElementById('statPercent').textContent = `${percent}%`;
 
-    function resetData() {
-      if (confirm("Are you sure you want to clear all your reading goals and progress?")) {
-        localStorage.removeItem(STORAGE_KEY);
-        booksData = loadData();
-        renderTable();
+      // Progress Bar width
+      const bar = document.getElementById('mainProgressBar');
+      bar.style.width = `${percent}%`;
+
+      // Formula status text matching sheet
+      const statusNotice = document.getElementById('statusNotice');
+      statusNotice.innerHTML = `<i class="fa-solid fa-sparkles"></i> <span>You have completed ${percent}% for your goal</span>`;
+
+      // Mobile Sticky Footer elements
+      document.getElementById('mobileStickyBadge').textContent = `${completedCount}/12`;
+      document.getElementById('mobileStickyPercent').textContent = `${percent}% Done`;
+      document.getElementById('mobileStickyBar').style.width = `${percent}%`;
+
+      // Filter Counts
+      document.getElementById('filterCountCompleted').textContent = completedCount;
+      document.getElementById('filterCountTodo').textContent = remainingCount;
+
+      // Check for 100% Celebration!
+      const dashboardCard = document.getElementById('dashboardCard');
+      if (percent === 100) {
+        dashboardCard.classList.add('glow-celebrate');
+        if (!celebrationTriggered) {
+          fireCelebration();
+          celebrationTriggered = true;
+          showToast('🎉 Congratulations! You completed your 2027 reading goal!', 'success');
+        }
+      } else {
+        dashboardCard.classList.remove('glow-celebrate');
+        celebrationTriggered = false;
       }
     }
 
-    function exportData() {
+    // Field change handler (debounce-free instant saving for title and author)
+    function handleFieldChange(index, field, value) {
+      booksData[index][field] = value;
+      saveState();
+      // Keep mobile & desktop inputs synchronized if user resizes window
+      syncInputValues(index, field, value);
+    }
+
+    function syncInputValues(index, field, value) {
+      // Find both desktop and mobile inputs for this index & field
+      const desktopRows = document.querySelectorAll('#desktopTableBody tr');
+      if (desktopRows[index]) {
+        const input = desktopRows[index].querySelector(field === 'title' ? '.title-field' : 'input:not(.title-field):not([type="checkbox"])');
+        if (input && input.value !== value) input.value = value;
+      }
+      const mobileCards = document.querySelectorAll('#mobileCardsContainer > div');
+      if (mobileCards[index]) {
+        const input = mobileCards[index].querySelector(field === 'title' ? '.title-field' : 'input:not(.title-field):not([type="checkbox"])');
+        if (input && input.value !== value) input.value = value;
+      }
+    }
+
+    // Toggle Done Handler
+    function handleToggleDone(index, isChecked) {
+      booksData[index].isDone = isChecked;
+      saveState();
+      render();
+      const book = booksData[index];
+      const titleLabel = book.title.trim() ? `"${book.title}"` : `${book.month} book`;
+      if (isChecked) {
+        showToast(`Marked ${titleLabel} as completed!`, 'success');
+      } else {
+        showToast(`Moved ${titleLabel} back to in-progress`, 'info');
+      }
+    }
+
+    // Celebration Confetti
+    function fireCelebration() {
+      if (typeof confetti === 'function') {
+        const duration = 3 * 1000;
+        const animationEnd = Date.now() + duration;
+        const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 1000 };
+
+        const interval = setInterval(function() {
+          const timeLeft = animationEnd - Date.now();
+          if (timeLeft <= 0) {
+            return clearInterval(interval);
+          }
+          const particleCount = 50 * (timeLeft / duration);
+          confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } }));
+          confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } }));
+        }, 250);
+      }
+    }
+
+    function randomInRange(min, max) {
+      return Math.random() * (max - min) + min;
+    }
+
+    // Search and Filter tabs
+    function handleSearch(val) {
+      searchQuery = val;
+      const clearBtn = document.getElementById('clearSearchBtn');
+      if (val.trim()) {
+        clearBtn.classList.remove('hidden');
+      } else {
+        clearBtn.classList.add('hidden');
+      }
+      render();
+    }
+
+    function clearSearch() {
+      document.getElementById('searchInput').value = '';
+      handleSearch('');
+    }
+
+    function setFilter(type) {
+      currentFilter = type;
+      render();
+    }
+
+    function resetFiltersAndSearch() {
+      currentFilter = 'all';
+      clearSearch();
+    }
+
+    function updateFilterButtons() {
+      const allBtn = document.getElementById('filterBtnAll');
+      const compBtn = document.getElementById('filterBtnCompleted');
+      const todoBtn = document.getElementById('filterBtnTodo');
+
+      const activeClass = ['bg-brand-600', 'text-white', 'font-semibold', 'shadow-sm'];
+      const inactiveClass = ['text-slate-400', 'hover:text-white'];
+
+      [allBtn, compBtn, todoBtn].forEach(b => {
+        b.classList.remove(...activeClass);
+        b.classList.add(...inactiveClass);
+      });
+
+      if (currentFilter === 'all') {
+        allBtn.classList.remove(...inactiveClass);
+        allBtn.classList.add(...activeClass);
+      } else if (currentFilter === 'completed') {
+        compBtn.classList.remove(...inactiveClass);
+        compBtn.classList.add(...activeClass);
+      } else {
+        todoBtn.classList.remove(...inactiveClass);
+        todoBtn.classList.add(...activeClass);
+      }
+    }
+
+    // Export to CSV (Matches original spreadsheet layout with formula)
+    function exportCSV() {
+      const completedCount = booksData.filter(b => b.isDone).length;
+      const percentage = Math.round((completedCount / 12) * 100);
+
+      let csv = "Month,Title,Author,Is done?\r\n";
+      booksData.forEach(row => {
+        const escapedTitle = `"${(row.title || '').replace(/"/g, '""')}"`;
+        const escapedAuthor = `"${(row.author || '').replace(/"/g, '""')}"`;
+        const doneStr = row.isDone ? "TRUE" : "FALSE";
+        csv += `${row.month},${escapedTitle},${escapedAuthor},${doneStr}\r\n`;
+      });
+
+      csv += `\r\nFormula,=COUNTIF(D:D,"True")/12\r\n`;
+      csv += `Goal Progress,${percentage}%\r\n`;
+
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.setAttribute("href", url);
+      link.setAttribute("download", `Books_to_read_2027_${Date.now()}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      showToast('Exported to CSV successfully!', 'success');
+    }
+
+    // Export to JSON
+    function exportJSON() {
       const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(booksData, null, 2));
       const downloadAnchor = document.createElement("a");
       downloadAnchor.setAttribute("href", dataStr);
-      downloadAnchor.setAttribute("download", "reading_tracker_2027.json");
+      downloadAnchor.setAttribute("download", `books_to_read_2027_backup.json`);
       document.body.appendChild(downloadAnchor);
       downloadAnchor.click();
       downloadAnchor.remove();
+      showToast('Exported to JSON backup file', 'success');
     }
 
+    // Modal Confirmation Dialogs
+    function openResetModal() {
+      const modal = document.getElementById('resetModal');
+      const card = document.getElementById('resetModalCard');
+      modal.classList.remove('hidden');
+      setTimeout(() => {
+        modal.classList.remove('opacity-0');
+        card.classList.remove('scale-95');
+      }, 10);
+    }
+
+    function closeResetModal() {
+      const modal = document.getElementById('resetModal');
+      const card = document.getElementById('resetModalCard');
+      modal.classList.add('opacity-0');
+      card.classList.add('scale-95');
+      setTimeout(() => {
+        modal.classList.add('hidden');
+      }, 200);
+    }
+
+    function confirmReset() {
+      closeResetModal();
+      localStorage.removeItem(STORAGE_KEY);
+      booksData = createInitialState();
+      searchQuery = '';
+      document.getElementById('searchInput').value = '';
+      currentFilter = 'all';
+      render();
+      showToast('Reading tracker has been reset', 'info');
+    }
+
+    // Toast Notifications
+    let toastTimeout;
+    function showToast(message, type = 'success') {
+      const toast = document.getElementById('toast');
+      const toastMsg = document.getElementById('toastMessage');
+      const toastIcon = document.getElementById('toastIcon');
+
+      clearTimeout(toastTimeout);
+      toastMsg.textContent = message;
+
+      if (type === 'success') {
+        toastIcon.className = "fa-solid fa-circle-check text-emerald-400";
+      } else if (type === 'info') {
+        toastIcon.className = "fa-solid fa-circle-info text-brand-400";
+      } else {
+        toastIcon.className = "fa-solid fa-bell text-amber-400";
+      }
+
+      toast.classList.remove('translate-y-12', 'opacity-0', 'pointer-events-none');
+
+      toastTimeout = setTimeout(() => {
+        toast.classList.add('translate-y-12', 'opacity-0', 'pointer-events-none');
+      }, 3000);
+    }
+
+    // HTML escape utility
     function escapeHtml(text) {
-      return (text || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+      if (!text) return "";
+      return text
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
     }
 
-    renderTable();
+    // Initialize application on page load
+    window.onload = function () {
+      init();
+    };
   </script>
 </body>
 </html>
