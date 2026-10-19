@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>2027 Reading Tracker</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --card-header: #334155;
+      --primary: #6366f1;
+      --primary-hover: #4f46e5;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --border: #334155;
+      --input-bg: #0f172a;
+      --success: #10b981;
+      --success-bg: rgba(16, 185, 129, 0.12);
+      --success-border: rgba(16, 185, 129, 0.35);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text-main);
+      padding: 2rem 1rem;
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 900px;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    /* Header & Progress Card */
+    .card {
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.4);
+      border: 1px solid var(--border);
+    }
+
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+    }
+
+    h1 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--text-main);
+      letter-spacing: -0.02em;
+    }
+
+    .goal-badge {
+      background: rgba(99, 102, 241, 0.2);
+      color: #a5b4fc;
+      border: 1px solid rgba(99, 102, 241, 0.4);
+      padding: 0.4rem 0.85rem;
+      border-radius: 9999px;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .progress-bar-container {
+      background: #0f172a;
+      border-radius: 9999px;
+      height: 16px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+
+    .progress-bar-fill {
+      background: linear-gradient(90deg, var(--primary), var(--success));
+      height: 100%;
+      width: 0%;
+      transition: width 0.4s ease;
+      border-radius: 9999px;
+    }
+
+    .status-text {
+      margin-top: 0.75rem;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      text-align: right;
+      font-weight: 500;
+    }
+
+    /* Table Styling */
+    .table-container {
+      overflow-x: auto;
+      padding: 0;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+    }
+
+    th {
+      background: var(--card-header);
+      padding: 0.9rem 1.25rem;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+    }
+
+    td {
+      padding: 0.85rem 1.25rem;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+      transition: background-color 0.2s;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    .month-col {
+      font-weight: 600;
+      color: #cbd5e1;
+      width: 140px;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 0.6rem 0.85rem;
+      background-color: var(--input-bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 0.95rem;
+      color: var(--text-main);
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    input[type="text"]::placeholder {
+      color: #475569;
+    }
+
+    input[type="text"]:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.25);
+    }
+
+    .checkbox-col {
+      text-align: center;
+      width: 90px;
+    }
+
+    input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+      accent-color: var(--success);
+    }
+
+    /* Completed row effect */
+    tr.completed {
+      background-color: var(--success-bg);
+    }
+
+    tr.completed td {
+      border-bottom-color: var(--success-border);
+    }
+
+    tr.completed input[type="text"] {
+      text-decoration: line-through;
+      color: var(--text-muted);
+      border-color: var(--success-border);
+      background-color: rgba(15, 23, 42, 0.6);
+    }
+
+    tr.completed .month-col {
+      color: var(--success);
+    }
+
+    /* Action Buttons */
+    .actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.75rem;
+    }
+
+    button {
+      padding: 0.55rem 1.1rem;
+      border-radius: 6px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      background: var(--card-bg);
+      color: var(--text-main);
+      transition: all 0.2s;
+    }
+
+    button:hover {
+      background: #334155;
+      border-color: #475569;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <!-- Header & Progress Card -->
+    <div class="card">
+      <div class="header-content">
+        <div>
+          <h1>📚 Books to Read (2027)</h1>
+          <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 4px;">
+            Set your monthly reading goals and mark them off as you complete them.
+          </p>
+        </div>
+        <div class="goal-badge" id="goalStatus">0 / 12 Completed</div>
+      </div>
+
+      <!-- Progress Bar -->
+      <div class="progress-bar-container">
+        <div class="progress-bar-fill" id="progressBar"></div>
+      </div>
+      <div class="status-text" id="statusMessage">
+        You have completed 0% for your goal
+      </div>
+    </div>
+
+    <!-- Book List Table -->
+    <div class="card table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Month</th>
+            <th>Title</th>
+            <th>Author</th>
+            <th style="text-align: center;">Is done?</th>
+          </tr>
+        </thead>
+        <tbody id="bookTableBody">
+          <!-- Populated by JavaScript -->
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Actions -->
+    <div class="actions">
+      <button onclick="resetData()">Reset Tracker</button>
+      <button onclick="exportData()">Export Data (JSON)</button>
+    </div>
+  </div>
+
+  <script>
+    const months = [
+      "January", "February", "March", "April", "May", "June",
+      "July", "August", "September", "October", "November", "December"
+    ];
+
+    const STORAGE_KEY = "reading_tracker_2027";
+
+    function loadData() {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        try {
+          return JSON.parse(saved);
+        } catch (e) {
+          console.error("Failed to parse saved data", e);
+        }
+      }
+      return months.map(month => ({
+        month: month,
+        title: "",
+        author: "",
+        isDone: false
+      }));
+    }
+
+    let booksData = loadData();
+
+    function saveData() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(booksData));
+      updateProgress();
+    }
+
+    function updateProgress() {
+      const completedCount = booksData.filter(b => b.isDone).length;
+      const totalCount = booksData.length;
+      const percentage = Math.round((completedCount / totalCount) * 100);
+
+      document.getElementById("progressBar").style.width = percentage + "%";
+      document.getElementById("goalStatus").innerText = `${completedCount} / ${totalCount} Completed`;
+      document.getElementById("statusMessage").innerText = 
+        `You have completed ${percentage}% for your goal`;
+    }
+
+    function renderTable() {
+      const tbody = document.getElementById("bookTableBody");
+      tbody.innerHTML = "";
+
+      booksData.forEach((item, index) => {
+        const tr = document.createElement("tr");
+        if (item.isDone) tr.classList.add("completed");
+
+        tr.innerHTML = `
+          <td class="month-col">${item.month}</td>
+          <td>
+            <input type="text" placeholder="Enter book title..." value="${escapeHtml(item.title)}" 
+              oninput="updateField(${index}, 'title', this.value)" />
+          </td>
+          <td>
+            <input type="text" placeholder="Enter author name..." value="${escapeHtml(item.author)}" 
+              oninput="updateField(${index}, 'author', this.value)" />
+          </td>
+          <td class="checkbox-col">
+            <input type="checkbox" ${item.isDone ? "checked" : ""} 
+              onchange="toggleDone(${index}, this.checked)" />
+          </td>
+        `;
+
+        tbody.appendChild(tr);
+      });
+
+      updateProgress();
+    }
+
+    function updateField(index, field, value) {
+      booksData[index][field] = value;
+      saveData();
+    }
+
+    function toggleDone(index, isChecked) {
+      booksData[index].isDone = isChecked;
+      saveData();
+      renderTable();
+    }
+
+    function resetData() {
+      if (confirm("Are you sure you want to clear all your reading goals and progress?")) {
+        localStorage.removeItem(STORAGE_KEY);
+        booksData = loadData();
+        renderTable();
+      }
+    }
+
+    function exportData() {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(booksData, null, 2));
+      const downloadAnchor = document.createElement("a");
+      downloadAnchor.setAttribute("href", dataStr);
+      downloadAnchor.setAttribute("download", "reading_tracker_2027.json");
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+    }
+
+    function escapeHtml(text) {
+      return (text || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+    }
+
+    renderTable();
+  </script>
+</body>
+</html>
