@@ -1,0 +1,126 @@
+/* ==========================================================================
+   layout.css – page structure and responsive behaviour (mobile-first)
+   Breakpoints:  ≥ 640px  tablets  |  ≥ 820px  desktop ledger rows
+   ========================================================================== */
+
+.page {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 64rem;
+  margin: 0 auto;
+  padding: 1.25rem 1rem 0;
+}
+
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding-bottom: 2.5rem;
+}
+
+/* ---------- Masthead ---------- */
+.masthead {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.toolbar {
+  display: flex;
+  gap: 0.6rem;
+}
+
+.toolbar .btn:not(.btn--icon) { flex: 1; }
+
+/* ---------- Ledger ---------- */
+.ledger {
+  padding: 1.5rem 1.1rem 1.4rem;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.7rem;
+  margin: 1.2rem 0;
+}
+
+/* ---------- Controls ---------- */
+.controls {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+/* ---------- Catalogue ---------- */
+.catalogue__head { display: none; }
+
+.catalogue__list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* ---------- Mobile progress bar ---------- */
+.bookmark-bar {
+  position: sticky;
+  bottom: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0 -1rem;
+  padding: 0.7rem 1rem calc(0.7rem + var(--safe-bottom));
+}
+
+/* ---------- Tablet ---------- */
+@media (min-width: 640px) {
+  .page { padding: 2rem 1.5rem 0; }
+
+  .masthead {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .ledger { padding: 1.75rem 1.75rem 1.6rem; }
+
+  .stats { grid-template-columns: repeat(4, 1fr); gap: 0.9rem; }
+
+  .controls {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .search { flex: 1; }
+}
+
+/* ---------- Desktop: entries become ledger rows ---------- */
+@media (min-width: 820px) {
+  .bookmark-bar { display: none; }
+
+  .catalogue {
+    --col-month: 9.5rem;
+    --col-author: 16rem;
+    --col-status: 10.5rem;
+    --row-gap: 1.25rem;
+  }
+
+  .catalogue__head,
+  .entry {
+    display: grid;
+    grid-template-columns: var(--col-month) minmax(0, 1fr) minmax(0, var(--col-author)) var(--col-status);
+    align-items: center;
+    column-gap: var(--row-gap);
+  }
+
+  .catalogue__head {
+    padding: 0.8rem 1.5rem;
+  }
+
+  .catalogue__list { gap: 0; }
+}

@@ -1,0 +1,818 @@
+/* ==========================================================================
+   components.css – visual styling for each UI piece, grouped by component.
+   Layout/positioning of the big blocks lives in layout.css.
+   ========================================================================== */
+
+/* ---------- Brass nameplate ---------- */
+.plaque {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.9rem 1.8rem;
+  color: var(--wood-900);
+  border: 1px solid var(--brass-dark);
+  border-radius: 6px;
+  background: linear-gradient(180deg, #e8d089 0%, #c9a24c 45%, #a98332 55%, #d4b564 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.55),
+    inset 0 -2px 4px rgba(90, 60, 10, 0.45),
+    0 8px 18px rgba(0, 0, 0, 0.55);
+}
+
+/* Little brass screws at both ends */
+.plaque::before,
+.plaque::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 50%;
+  transform: translateY(-50%);
+  background: radial-gradient(circle at 35% 30%, #f4e3a6, var(--brass-dark));
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.5);
+}
+.plaque::before { left: 0.55rem; }
+.plaque::after { right: 0.55rem; }
+
+.plaque__crest {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  font-size: 1.25rem;
+  color: var(--brass-light);
+  background: radial-gradient(circle at 35% 30%, var(--burgundy), var(--burgundy-deep));
+  border: 2px solid var(--brass-dark);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5), 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+.plaque__eyebrow {
+  font-family: var(--font-caps);
+  font-size: 0.8rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--burgundy-deep);
+}
+
+.plaque__title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-display);
+  font-size: clamp(1.45rem, 5.5vw, 2.1rem);
+  font-weight: 800;
+  line-height: 1.15;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.45); /* engraved look */
+}
+
+.plaque__year {
+  padding: 0 0.5rem;
+  font-size: 0.65em;
+  letter-spacing: 0.08em;
+  color: var(--brass-light);
+  background: var(--burgundy);
+  border: 1px solid var(--burgundy-deep);
+  border-radius: 3px;
+  text-shadow: none;
+}
+
+.plaque__subtitle {
+  font-size: 1rem;
+  font-style: italic;
+  color: var(--wood-700);
+}
+
+/* ---------- Buttons (leather-bound) ---------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  padding: 0.6rem 1.05rem;
+  font-family: var(--font-caps);
+  font-size: 1rem;
+  letter-spacing: 0.08em;
+  color: var(--paper);
+  background: linear-gradient(180deg, #3f6552, var(--forest-deep));
+  border: 1px solid var(--brass);
+  border-radius: var(--radius);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18), 0 3px 6px rgba(0, 0, 0, 0.4);
+  transition: filter 0.15s, transform 0.1s;
+}
+.btn:hover { filter: brightness(1.18); }
+.btn:active { transform: translateY(1px); }
+
+.btn--icon { padding: 0.6rem 0.85rem; }
+
+.btn--danger { background: linear-gradient(180deg, #a1303c, var(--burgundy-deep)); }
+
+.btn--ghost {
+  color: var(--ink);
+  background: transparent;
+  border-color: var(--ink-faint);
+  box-shadow: none;
+}
+
+/* ---------- Ornate section title ---------- */
+.ornate-title {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-family: var(--font-display);
+  font-size: 1.45rem;
+  font-weight: 700;
+  color: var(--burgundy-deep);
+  text-align: center;
+}
+.ornate-title::before,
+.ornate-title::after {
+  content: '';
+  flex: 1;
+  height: 5px;
+  border-block: 1px solid var(--brass-dark);
+}
+
+/* ---------- Stats ---------- */
+.stat {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 0.85rem;
+  background: rgba(255, 255, 255, 0.28);
+  border: 1px solid var(--paper-edge);
+  border-radius: 3px;
+  box-shadow: inset 0 0 0 3px rgba(246, 236, 211, 0.6), inset 0 0 0 4px rgba(125, 95, 31, 0.3);
+}
+
+.stat__icon {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 2.4rem;
+  height: 2.4rem;
+  border-radius: 50%;
+  color: var(--wood-900);
+  background: radial-gradient(circle at 35% 30%, var(--brass-light), var(--brass-dark));
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+.stat__label {
+  font-family: var(--font-caps);
+  font-size: 0.82rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.stat__value {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--ink);
+}
+.stat__value small {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--ink-soft);
+}
+
+/* ---------- Bookshelf ---------- */
+.shelf {
+  position: relative;
+  padding: 1rem 0.9rem 0;
+  margin-bottom: 1.4rem;
+  border-radius: 4px 4px 0 0;
+  background:
+    linear-gradient(180deg, rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.2)),
+    var(--wood-grain),
+    var(--wood-800);
+  box-shadow: inset 0 8px 18px rgba(0, 0, 0, 0.7), inset 0 0 0 3px var(--wood-600);
+}
+
+/* The plank the books stand on */
+.shelf::after {
+  content: '';
+  display: block;
+  height: 0.9rem;
+  margin: 0 -0.9rem;
+  border-top: 2px solid rgba(224, 197, 122, 0.4);
+  background: linear-gradient(180deg, var(--wood-600), var(--wood-700) 60%, var(--wood-900));
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.5);
+}
+
+.shelf__books {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 0.3rem;
+  height: 9.6rem;
+}
+
+.shelf__books > li {
+  flex: 1 1 0;
+  min-width: 0;
+  max-width: 3.6rem;
+  height: 100%;
+  display: flex;
+  align-items: flex-end;
+}
+
+.spine {
+  --spine: var(--burgundy);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: var(--h, 8rem);
+  padding: 0;
+  border: 0;
+  border-radius: 3px 3px 0 0;
+  font-family: var(--font-display);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--brass-light);
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0) 22%, rgba(0, 0, 0, 0.3)),
+    var(--spine);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.35), 2px 0 3px rgba(0, 0, 0, 0.45);
+  transition: transform 0.15s;
+}
+.spine:hover,
+.spine:focus-visible { transform: translateY(-5px); }
+
+/* Gold bands near the top and bottom of a spine */
+.spine::before,
+.spine::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 0.28rem;
+  background: var(--brass);
+  border-block: 1px solid var(--brass-dark);
+}
+.spine::before { top: 0.45rem; }
+.spine::after { bottom: 0.45rem; }
+
+.spine__label {
+  max-height: calc(var(--h, 8rem) - 3.2rem);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  writing-mode: vertical-rl;
+}
+
+/* Read: rich cloth colours (cycled) */
+.spine--tone-0 { --spine: #6e1f2b; }
+.spine--tone-1 { --spine: #2e4a3b; }
+.spine--tone-2 { --spine: #25324d; }
+.spine--tone-3 { --spine: #7a4a1e; }
+.spine--tone-4 { --spine: #4a2a4a; }
+.spine--tone-5 { --spine: #1f4a4f; }
+
+/* Chosen but not read yet: faded sepia binding */
+.spine--unread {
+  --spine: #a38a63;
+  color: #35271a;
+}
+.spine--unread::before,
+.spine--unread::after {
+  background: #7a6540;
+  border-color: #4b3b22;
+}
+
+/* Nothing entered for this month: an empty slot */
+.spine--empty {
+  color: rgba(246, 236, 211, 0.55);
+  background: none;
+  border: 1px dashed rgba(246, 236, 211, 0.3);
+  border-bottom: 0;
+  box-shadow: none;
+}
+.spine--empty::before,
+.spine--empty::after { display: none; }
+
+/* ---------- Progress bar ---------- */
+.progress {
+  height: 1.2rem;
+  padding: 3px;
+  background: var(--wood-900);
+  border: 2px solid var(--brass-dark);
+  border-radius: 999px;
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.8), 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+.progress__fill {
+  height: 100%;
+  border-radius: 999px;
+  background:
+    repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.12) 0 6px, transparent 6px 12px),
+    linear-gradient(90deg, var(--burgundy), var(--brass) 70%, var(--brass-light));
+  box-shadow: 0 0 6px rgba(184, 146, 58, 0.6);
+  transition: width 0.5s ease-out;
+}
+
+.status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.7rem;
+  margin-top: 0.9rem;
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-style: italic;
+  text-align: center;
+  color: var(--burgundy-deep);
+}
+.status__fleuron { color: var(--brass-dark); }
+
+/* Goal reached: the ledger glows like lamplight */
+.ledger.is-complete {
+  box-shadow: var(--shadow-paper), 0 0 42px rgba(224, 197, 122, 0.55);
+}
+
+/* ---------- Search ---------- */
+.search { position: relative; }
+
+.search__icon {
+  position: absolute;
+  top: 50%;
+  left: 0.95rem;
+  transform: translateY(-50%);
+  color: var(--brass-dark);
+  pointer-events: none;
+}
+
+.search__input {
+  width: 100%;
+  padding: 0.7rem 2.6rem;
+  font-family: var(--font-type);
+  font-size: 0.95rem;
+  color: var(--ink);
+  background-color: var(--paper);
+  background-image: var(--paper-noise);
+  border: 1px solid var(--paper-edge);
+  border-radius: var(--radius);
+  box-shadow: inset 0 2px 4px rgba(90, 60, 10, 0.3);
+  -webkit-appearance: none;
+  appearance: none;
+}
+.search__input::placeholder { color: var(--ink-faint); font-style: italic; }
+.search__input::-webkit-search-cancel-button { display: none; }
+
+.search__clear {
+  position: absolute;
+  top: 50%;
+  right: 0.35rem;
+  transform: translateY(-50%);
+  width: 2rem;
+  height: 2rem;
+  color: var(--ink-soft);
+  background: none;
+  border: 0;
+}
+.search__clear:hover { color: var(--burgundy); }
+
+/* ---------- Filter tabs (like labelled drawers) ---------- */
+.drawer-tabs {
+  display: flex;
+  gap: 0.4rem;
+  padding: 0.3rem;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(184, 146, 58, 0.35);
+  border-radius: var(--radius);
+}
+@media (min-width: 640px) {
+  .drawer-tabs { display: inline-flex; }
+}
+
+.drawer-tab {
+  flex: 1;
+  padding: 0.45rem 0.9rem;
+  font-family: var(--font-caps);
+  font-size: 0.98rem;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+  color: var(--paper);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  transition: color 0.15s, background-color 0.15s;
+}
+.drawer-tab:hover { color: var(--brass-light); }
+.drawer-tab.is-active {
+  color: var(--burgundy-deep);
+  background: var(--paper);
+  border-color: var(--brass);
+  box-shadow: inset 0 0 0 2px rgba(125, 95, 31, 0.25), 0 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+/* ---------- Catalogue header (desktop only; hidden in layout.css on mobile) ---------- */
+@media (min-width: 820px) {
+  .catalogue__head {
+    font-family: var(--font-caps);
+    font-size: 0.9rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--brass-light);
+    background: linear-gradient(180deg, var(--burgundy), var(--burgundy-deep));
+    border: 1px solid var(--brass-dark);
+    border-bottom: 2px solid var(--brass);
+    border-radius: var(--radius) var(--radius) 0 0;
+    box-shadow: var(--shadow-soft);
+  }
+
+  .catalogue__head span:last-child { text-align: center; }
+
+  /* The whole list becomes one sheet of ruled ledger paper */
+  .catalogue__list {
+    background-color: var(--paper);
+    background-image: var(--paper-noise);
+    border: 1px solid var(--paper-edge);
+    border-top: 0;
+    border-radius: 0 0 var(--radius) var(--radius);
+    box-shadow: var(--shadow-paper);
+  }
+}
+
+/* ---------- Index card / ledger row ---------- */
+.entry {
+  position: relative;
+  color: var(--ink);
+  background-color: var(--paper);
+  background-image: var(--paper-noise);
+  transition: background-color 0.15s;
+}
+
+/* A read book gets a green cloth edge */
+.entry.is-done { box-shadow: inset 4px 0 0 var(--forest); }
+
+.entry__month {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--burgundy-deep);
+}
+.entry.is-done .entry__month { color: var(--forest-deep); }
+
+.entry__dot {
+  flex-shrink: 0;
+  width: 0.6rem;
+  height: 0.6rem;
+  border: 1px solid var(--brass-dark);
+  border-radius: 50%;
+  background: transparent;
+}
+.entry.is-done .entry__dot { background: var(--forest); border-color: var(--forest-deep); }
+
+.entry__label {
+  display: block;
+  margin-bottom: 0.1rem;
+  font-family: var(--font-caps);
+  font-size: 0.8rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+/* Text typed straight onto the ruled line */
+.entry__input {
+  width: 100%;
+  padding: 0.45rem 0.35rem;
+  font-family: var(--font-type);
+  font-size: 0.98rem;
+  color: var(--ink);
+  background: transparent;
+  border: 0;
+  border-bottom: 1px dotted var(--ink-faint);
+  border-radius: 0;
+  transition: background-color 0.15s, border-color 0.15s;
+}
+.entry__input::placeholder { color: var(--ink-faint); font-style: italic; opacity: 0.85; }
+.entry__input:focus {
+  outline: none;
+  background: rgba(184, 146, 58, 0.15);
+  border-bottom: 2px solid var(--burgundy);
+}
+
+.entry__status {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+}
+
+.entry__date {
+  font-family: var(--font-type);
+  font-size: 0.7rem;
+  color: var(--ink-soft);
+}
+
+/* ---------- "READ" rubber stamp (a checkbox in disguise) ---------- */
+.stamp-toggle { position: relative; display: inline-block; cursor: pointer; }
+
+.stamp-toggle__input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.stamp {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.75rem;
+  font-family: var(--font-caps);
+  font-size: 0.85rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--ink-faint);
+  border: 2px dashed var(--ink-faint);
+  border-radius: 3px;
+  transition: color 0.15s, border-color 0.15s;
+}
+.stamp-toggle:hover .stamp { color: var(--ink-soft); border-color: var(--ink-soft); }
+.stamp-toggle__input:focus-visible + .stamp { outline: 2px solid var(--brass-dark); outline-offset: 3px; }
+
+.stamp__done { display: none; }
+
+.stamp-toggle__input:checked + .stamp {
+  font-weight: 700;
+  color: var(--stamp);
+  background: rgba(154, 35, 48, 0.06);
+  border: 3px double var(--stamp);
+  transform: rotate(-6deg);
+}
+.stamp-toggle__input:checked + .stamp .stamp__idle { display: none; }
+.stamp-toggle__input:checked + .stamp .stamp__done { display: inline; }
+
+/* Only the stamp you just pressed animates (not every re-render) */
+.entry--just-stamped .stamp { animation: stamp-in 0.35s cubic-bezier(0.2, 1.4, 0.4, 1); }
+
+@keyframes stamp-in {
+  from { opacity: 0; transform: scale(1.7) rotate(-18deg); }
+  to   { opacity: 1; transform: scale(1) rotate(-6deg); }
+}
+
+/* ---------- Entries on small screens: stacked index cards ---------- */
+@media (max-width: 819.98px) {
+  .entry {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+      'month status'
+      'title title'
+      'author author';
+    gap: 0.7rem 0.8rem;
+    align-items: center;
+    padding: 1rem 1.1rem 2.1rem;
+    border: 1px solid var(--paper-edge);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-soft);
+  }
+  .entry.is-done { box-shadow: var(--shadow-soft), inset 4px 0 0 var(--forest); }
+
+  .entry__month { grid-area: month; }
+  .entry__field--title { grid-area: title; }
+  .entry__field--author { grid-area: author; }
+  .entry__status { grid-area: status; }
+
+  /* The hole a catalogue rod passes through */
+  .entry::after {
+    content: '';
+    position: absolute;
+    bottom: 0.6rem;
+    left: 50%;
+    width: 0.75rem;
+    height: 0.75rem;
+    transform: translateX(-50%);
+    border-radius: 50%;
+    background: var(--wood-800);
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.9), 0 1px 0 rgba(255, 255, 255, 0.5);
+  }
+}
+
+/* ---------- Entries on desktop: ledger rows ---------- */
+@media (min-width: 820px) {
+  .entry {
+    min-height: 4.2rem;
+    padding: 0 1.5rem;
+    background: none;
+    border-bottom: 1px solid rgba(125, 95, 31, 0.28);
+  }
+  .entry:last-child { border-bottom: 0; }
+  .entry:hover { background-color: rgba(184, 146, 58, 0.09); }
+
+  /* Red margin rule after the month, like an accounting ledger */
+  .entry__month {
+    align-self: stretch;
+    padding-right: 1rem;
+    border-right: 3px double var(--margin-line);
+  }
+
+  .entry__field { padding: 0.8rem 0; }
+
+  /* Column headers already name the fields, so labels are screen-reader only */
+  .entry__label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+  }
+}
+
+/* ---------- Empty state ---------- */
+.empty {
+  padding: 2.5rem 1.5rem;
+  text-align: center;
+}
+
+.empty__icon {
+  display: grid;
+  place-items: center;
+  width: 3.4rem;
+  height: 3.4rem;
+  margin: 0 auto 0.8rem;
+  font-size: 1.3rem;
+  color: var(--wood-900);
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, var(--brass-light), var(--brass-dark));
+}
+
+.empty__title {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  color: var(--burgundy-deep);
+}
+
+.empty__text {
+  max-width: 24rem;
+  margin: 0.3rem auto 1.1rem;
+  color: var(--ink-soft);
+}
+
+/* ---------- Reset dialog ---------- */
+.dialog {
+  width: calc(100% - 2rem);
+  max-width: 28rem;
+  padding: 0;
+  overflow: visible;
+  color: var(--ink);
+  background: transparent;
+  border: 0;
+}
+.dialog::backdrop {
+  background: rgba(12, 6, 3, 0.75);
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+}
+.dialog[open] .dialog__card { animation: dialog-in 0.2s ease-out; }
+
+.dialog__card {
+  padding: 1.6rem 1.5rem 1.4rem;
+  text-align: center;
+}
+
+.dialog__icon {
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  margin: 0 auto 0.8rem;
+  font-size: 1.2rem;
+  color: var(--paper);
+  background: var(--stamp);
+  border-radius: 50%;
+  box-shadow: inset 0 -2px 4px rgba(0, 0, 0, 0.35), 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.dialog__title {
+  margin-bottom: 0.5rem;
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  color: var(--burgundy-deep);
+}
+
+.dialog__text {
+  margin-bottom: 1.3rem;
+  color: var(--ink-soft);
+}
+
+.dialog__actions {
+  display: flex;
+  justify-content: center;
+  gap: 0.7rem;
+}
+
+@keyframes dialog-in {
+  from { opacity: 0; transform: translateY(0.6rem) scale(0.97); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* ---------- Toast ---------- */
+.toast {
+  position: fixed;
+  right: 1rem;
+  bottom: calc(5rem + var(--safe-bottom));
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  max-width: calc(100% - 2rem);
+  padding: 0.7rem 1rem;
+  font-family: var(--font-type);
+  font-size: 0.85rem;
+  color: var(--ink);
+  background-color: var(--paper);
+  background-image: var(--paper-noise);
+  border: 1px solid var(--paper-edge);
+  border-left: 4px solid var(--brass);
+  border-radius: 3px;
+  box-shadow: var(--shadow-soft);
+  opacity: 0;
+  transform: translateY(1rem) rotate(-1deg);
+  pointer-events: none;
+  transition: opacity 0.3s, transform 0.3s;
+}
+.toast.is-visible { opacity: 1; transform: none; }
+
+.toast__icon--success { color: var(--forest); }
+.toast__icon--info { color: var(--burgundy); }
+.toast__icon--warn { color: var(--brass-dark); }
+
+@media (min-width: 820px) {
+  .toast { right: 1.5rem; bottom: 1.5rem; }
+}
+
+/* ---------- Mobile progress bar ---------- */
+.bookmark-bar {
+  color: var(--paper);
+  background: linear-gradient(180deg, var(--wood-700), var(--wood-900));
+  border-top: 2px solid var(--brass);
+  box-shadow: 0 -8px 18px rgba(0, 0, 0, 0.5);
+}
+
+.bookmark-bar__badge {
+  min-width: 2.7rem;
+  padding: 0.3rem 0.5rem;
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-align: center;
+  color: var(--wood-900);
+  background: linear-gradient(180deg, var(--brass-light), var(--brass));
+  border-radius: 3px;
+}
+
+.bookmark-bar__info {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+}
+.bookmark-bar__percent { font-family: var(--font-display); font-size: 0.9rem; font-weight: 600; }
+.bookmark-bar__sub { font-size: 0.78rem; font-style: italic; color: var(--brass-light); }
+
+.bookmark-bar__track {
+  flex: 1;
+  max-width: 9rem;
+  height: 0.7rem;
+  margin-left: auto;
+  overflow: hidden;
+  background: var(--wood-900);
+  border: 1px solid var(--brass-dark);
+  border-radius: 999px;
+}
+.bookmark-bar__fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--burgundy), var(--brass));
+  transition: width 0.3s;
+}
+
+.bookmark-bar__top {
+  width: 2.4rem;
+  height: 2.4rem;
+  color: var(--brass-light);
+  background: var(--wood-600);
+  border: 1px solid var(--brass-dark);
+  border-radius: 3px;
+}

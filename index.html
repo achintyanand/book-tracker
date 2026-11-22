@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#2a1810" />
+  <title>Books to Read (2027) — The Reading Room</title>
+
+  <!-- Fonts: Playfair Display (headings), Cormorant Garamond (body), IM Fell English SC (small caps), Special Elite (typewriter) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=IM+Fell+English+SC&family=Playfair+Display:wght@600;700;800&family=Special+Elite&display=swap" />
+
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+  <!-- App styles -->
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/layout.css" />
+  <link rel="stylesheet" href="css/components.css" />
+</head>
+<body>
+  <div class="page">
+
+    <!-- ===== Masthead: brass nameplate + toolbar ===== -->
+    <header class="masthead">
+      <div class="plaque">
+        <span class="plaque__crest" aria-hidden="true"><i class="fa-solid fa-book-bookmark"></i></span>
+        <div class="plaque__text">
+          <p class="plaque__eyebrow">The Reading Room</p>
+          <h1 class="plaque__title">Books to Read <span class="plaque__year" data-bind="year">2027</span></h1>
+          <p class="plaque__subtitle">Annual monthly reading register &amp; goal ledger</p>
+        </div>
+      </div>
+
+      <div class="toolbar" role="group" aria-label="Ledger actions">
+        <button type="button" class="btn" data-action="export-csv">
+          <i class="fa-solid fa-file-csv" aria-hidden="true"></i><span>CSV</span>
+        </button>
+        <button type="button" class="btn" data-action="export-json">
+          <i class="fa-solid fa-file-code" aria-hidden="true"></i><span>JSON</span>
+        </button>
+        <button type="button" class="btn btn--danger btn--icon" data-action="open-reset" title="Reset all progress" aria-label="Reset all progress">
+          <i class="fa-solid fa-eraser" aria-hidden="true"></i>
+        </button>
+      </div>
+    </header>
+
+    <main class="main">
+
+      <!-- ===== Librarian's ledger: stats, bookshelf, progress ===== -->
+      <section id="dashboardCard" class="ledger paper" aria-labelledby="ledgerTitle">
+        <h2 id="ledgerTitle" class="ornate-title"><span>Librarian’s Ledger</span></h2>
+
+        <dl class="stats">
+          <div class="stat">
+            <span class="stat__icon" aria-hidden="true"><i class="fa-solid fa-circle-check"></i></span>
+            <div>
+              <dt class="stat__label">Completed</dt>
+              <dd id="statCompleted" class="stat__value">0</dd>
+            </div>
+          </div>
+          <div class="stat">
+            <span class="stat__icon" aria-hidden="true"><i class="fa-solid fa-hourglass-half"></i></span>
+            <div>
+              <dt class="stat__label">Remaining</dt>
+              <dd id="statRemaining" class="stat__value">12</dd>
+            </div>
+          </div>
+          <div class="stat">
+            <span class="stat__icon" aria-hidden="true"><i class="fa-solid fa-bullseye"></i></span>
+            <div>
+              <dt class="stat__label">Target</dt>
+              <dd class="stat__value"><span data-bind="target">12</span> <small>books</small></dd>
+            </div>
+          </div>
+          <div class="stat">
+            <span class="stat__icon" aria-hidden="true"><i class="fa-solid fa-chart-line"></i></span>
+            <div>
+              <dt class="stat__label">Progress</dt>
+              <dd id="statPercent" class="stat__value">0%</dd>
+            </div>
+          </div>
+        </dl>
+
+        <!-- Twelve spines, one per month (rendered by JS) -->
+        <div class="shelf">
+          <ol id="shelfBooks" class="shelf__books" aria-label="Bookshelf – one book per month"></ol>
+        </div>
+
+        <div id="mainProgress" class="progress" role="progressbar" aria-label="Reading goal progress"
+             aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+          <div id="mainProgressBar" class="progress__fill" style="width: 0%"></div>
+        </div>
+
+        <p id="statusNotice" class="status">
+          <span class="status__fleuron" aria-hidden="true">❦</span>
+          <span id="statusText">You have completed 0% of your goal</span>
+          <span class="status__fleuron" aria-hidden="true">❦</span>
+        </p>
+      </section>
+
+      <!-- ===== Search + filter drawer labels ===== -->
+      <section class="controls" aria-label="Search and filter">
+        <div class="search">
+          <i class="fa-solid fa-magnifying-glass search__icon" aria-hidden="true"></i>
+          <input type="search" id="searchInput" class="search__input" autocomplete="off"
+                 placeholder="Search title, author or month…" aria-label="Search books" />
+          <button type="button" id="clearSearchBtn" class="search__clear" data-action="clear-search" aria-label="Clear search" hidden>
+            <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+          </button>
+        </div>
+
+        <div class="drawer-tabs" role="group" aria-label="Filter books">
+          <button type="button" class="drawer-tab is-active" data-action="set-filter" data-filter="all" aria-pressed="true">
+            All (<span data-bind="target">12</span>)
+          </button>
+          <button type="button" class="drawer-tab" data-action="set-filter" data-filter="completed" aria-pressed="false">
+            Read (<span id="filterCountCompleted">0</span>)
+          </button>
+          <button type="button" class="drawer-tab" data-action="set-filter" data-filter="todo" aria-pressed="false">
+            To Read (<span id="filterCountTodo">12</span>)
+          </button>
+        </div>
+      </section>
+
+      <!-- ===== Card catalogue: one index card per month ===== -->
+      <section class="catalogue" aria-label="Reading list">
+        <div class="catalogue__head" aria-hidden="true">
+          <span>Month</span>
+          <span>Book Title</span>
+          <span>Author</span>
+          <span>Status</span>
+        </div>
+
+        <ol id="entryList" class="catalogue__list"></ol>
+
+        <div id="emptyState" class="empty paper" hidden>
+          <span class="empty__icon" aria-hidden="true"><i class="fa-solid fa-book-open"></i></span>
+          <h3 class="empty__title">No volumes match your search</h3>
+          <p class="empty__text">Try clearing the search or choosing another drawer to see the full register.</p>
+          <button type="button" class="btn" data-action="reset-filters">Reset filters</button>
+        </div>
+      </section>
+    </main>
+
+    <!-- ===== Mobile progress bar (bookmark) ===== -->
+    <aside class="bookmark-bar" aria-label="Progress summary">
+      <span id="mobileStickyBadge" class="bookmark-bar__badge">0/12</span>
+      <div class="bookmark-bar__info">
+        <span id="mobileStickyPercent" class="bookmark-bar__percent">0% Done</span>
+        <span class="bookmark-bar__sub"><span data-bind="year">2027</span> Challenge</span>
+      </div>
+      <div class="bookmark-bar__track" aria-hidden="true">
+        <div id="mobileStickyBar" class="bookmark-bar__fill" style="width: 0%"></div>
+      </div>
+      <button type="button" class="bookmark-bar__top" data-action="scroll-top" aria-label="Back to top">
+        <i class="fa-solid fa-arrow-up" aria-hidden="true"></i>
+      </button>
+    </aside>
+  </div>
+
+  <!-- ===== Reset confirmation (native <dialog>: focus trap + Esc handled by the browser) ===== -->
+  <dialog id="resetDialog" class="dialog" aria-labelledby="resetTitle">
+    <div class="dialog__card paper">
+      <span class="dialog__icon" aria-hidden="true"><i class="fa-solid fa-triangle-exclamation"></i></span>
+      <h3 id="resetTitle" class="dialog__title">Clear the whole ledger?</h3>
+      <p class="dialog__text">
+        This will wipe all <span data-bind="target">12</span> titles, authors and read marks back to an empty register.
+        It cannot be undone unless you have exported a backup.
+      </p>
+      <div class="dialog__actions">
+        <button type="button" class="btn btn--ghost" data-action="close-reset">Cancel</button>
+        <button type="button" class="btn btn--danger" data-action="confirm-reset">Yes, clear it</button>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- ===== Toast (a slip of paper) ===== -->
+  <div id="toast" class="toast" role="status" aria-live="polite">
+    <i id="toastIcon" class="fa-solid fa-circle-check toast__icon" aria-hidden="true"></i>
+    <span id="toastMessage">Changes saved</span>
+  </div>
+
+  <!-- Libraries -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <!-- App scripts (order matters: each file only depends on the ones above it) -->
+  <script src="js/constants.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/views.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
